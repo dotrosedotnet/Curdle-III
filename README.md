@@ -2,8 +2,8 @@
 
 A Curses Wordle written in Python
 
-This is my third attempt at an elegant, effective Wordle
-written in Curses.
+This is my third attempt at an elegant, effective curses
+Wordle (Curdle) in python.
 
 I love the terminal, and curses, and am finally learning to
 program. I've learned a lot from my first two attempts, and
