@@ -59,6 +59,10 @@ def grid(y,x,try_count):
 # can I do it without an if statement?
 # five character guess = input?
 
+# I THINK I'M STUCK IN THIS WHILE LOOP LOL
+# I gotta add an argument to get me out of the while loop from another function?!?!?!
+# it feels messy, but I'll look into it!!
+
 def collect_guess():
     curses.noecho()
     i = 0
@@ -71,17 +75,26 @@ def collect_guess():
         elif letter in ('KEY_BACKSPACE', '\b', '\x7f'):
             guess = guess[:-1]
         rows, cols = stdscr.getmaxyx()
-        printc(guess.ljust(cols),"this guess: ", -20)
-        printc(str(len(guess)).ljust(cols),"guess len: ", -19)
+        # printc(guess.ljust(cols),"this guess: ", -20)
+        # printc(str(len(guess)).ljust(cols),"guess len: ", -19)
     guess = (''.join(this_guess[:5])).upper()
-    printc(guess,"guess: ", -22)
-    printc(str(len(guess)),"guess\' length: ", -21)
     return guess
 
-def print_guess(y,x,guess):
-    curses.move(y,x)
+def print_guess(y,x):
     while True:
+        # print the characters inside the grid
+        # the first character is in position one
+        # ie guess[0] is in y,0
+        # guess[1] should be in y,2
+        # guess[2] should be in y,4
+        # guess[3] should be in y,6
+        # so the x position of each letter should be twice it's index...
         guess = collect_guess()
+        printc(guess.ljust(cols),"this guess: ", -20)
+        printc(str(len(guess)).ljust(cols),"guess len: ", -19)
+        for i, c in enumerate(list(guess)):
+            curses.addch(y,i*2,c)
+            printc(str(guess),"print guess: ", -18)
 
 
 
