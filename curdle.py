@@ -23,6 +23,8 @@ grid_rows = {
     "grid_close": ""
 }
 
+guess = list(" "*5)
+
 def printc(string,label="",yoffset=0):
     rows, cols = stdscr.getmaxyx()
     stdscr.addstr(rows-5+yoffset, 1, ''.join([label,string]))
@@ -46,43 +48,42 @@ def grid(y,x,try_count):
         i+=2
     stdscr.addstr(y+(try_count*2),x,grid_rows['grid_close'])
 
-guess = list(" "*6)
+# MAKE THIS SO IT APPENDS TO AN EMPTY STRING UNTIL IT'S FIVE CHARS
+# the hard limit of the pre-existing string is silly.
+# f strings for adding
+# my_str = mystr[:-1] for removing
+# how to stop string at five chars
+# disregard everything added after five chars
+# if len(this_guess) < 5: add
+# if len(this_guess == 5: allow enter to submit guess
+# can I do it without an if statement?
+# five character guess = input?
 
-def print_guess(y,x):
+def collect_guess():
+    curses.noecho()
     i = 0
     break_flag = False
+    guess = ""
     while True:
-        curses.curs_set(0)
-        stdscr.move(y,x)
-        stdscr.addstr((try_count*2)+4,letter_count-3,str(stdscr.getyx()))
-        stdscr.move(y,x)
-        guess[i] = stdscr.getkey()
-        if str.isalpha(guess[i]) == True and i < 4:
-            stdscr.addstr((guess[i]).upper())
-            stdscr.move(y,x+2)
-            x = x+2
-            i += 1
-        elif str.isalpha(guess[i]) == True and i == 4:
-            pass
-        elif guess[i] in ('KEY_BACKSPACE', '\b', '\x7f'):
-            guess[i-1] = " "
-            if i == 0:
-                pass
-            elif i > 0:
-                stdscr.move(y, x-2)
-                stdscr.addstr(" ")
-                x = x-2
-                i -= 1
-        elif i >= 5 and guess[i] in ('KEY_ENTER', '\n', '\r'):
-            break_flag = True
-        if break_flag == True: break
-        printc(str(guess),"guess: ",(-25))
-        stdscr.addstr((try_count*2)+3,letter_count,str(i))
-        stdscr.addstr((try_count*2)+2,letter_count-2,''.join(guess[:5]).upper())
-    this_guess = (''.join(guess[:5])).upper()
-    printc(this_guess,"this guess: ", -23) # this looks good
-    printc(str(len(this_guess)),"this guess\' length: ", -22) # this looks good
-    return this_guess
+        letter = stdscr.getkey()
+        if str.isalpha(letter) == True and len(guess) < 5:
+            guess = f"{guess}{letter}"
+        elif letter in ('KEY_BACKSPACE', '\b', '\x7f'):
+            guess = guess[:-1]
+        rows, cols = stdscr.getmaxyx()
+        printc(guess.ljust(cols),"this guess: ", -20)
+        printc(str(len(guess)).ljust(cols),"guess len: ", -19)
+    guess = (''.join(this_guess[:5])).upper()
+    printc(guess,"guess: ", -22)
+    printc(str(len(guess)),"guess\' length: ", -21)
+    return guess
+
+def print_guess(y,x,guess):
+    curses.move(y,x)
+    while True:
+        guess = collect_guess()
+
+
 
 
 """
@@ -99,7 +100,7 @@ check guess against word
 """
 
 def check_guess(y, x):
-    this_guess = print_guess(y, x)
+    this_guess = collect_guess(y, x)
     word_letters = list(word)
     n=1
     # check for green (1), red (2), yellow (3)
@@ -144,11 +145,13 @@ guess1x = grid_x+1
 
 
 def main(stdscr):
+    curses.curs_set(0)
     stdscr.clear()
     grid(grid_y,grid_x,try_count)
-    check_guess(guess1y,guess1x)
+    print_guess(guess1y,guess1x)
     stdscr.refresh()
     sleep(3)
+    curses.curs_set(1)
 
 
 wrapper(main)
