@@ -86,28 +86,41 @@ def a_guess(y,x,l):
                 return this_guess
         printc(str(submitted),"submitted: ", -15)
 
+
+
 def check_guess(y,x):
+    correct_f = curses.color_pair(1)
+    present_f = curses.color_pair(2)
+    absent_f = curses.color_pair(3)
     this_guess = a_guess(y,x,letter_count)
     correct_letters = []
     present_letters = []
     absent_letters = []
+    word_letters = []
     if this_guess == word:
         printc("SUCCESS!","Success?: ", -5)
     else:
+        word_letters = list(word)
         for i, l in enumerate(list(this_guess)):
-            word_letters = list(word)
             if word[i] == this_guess[i]:
-                correct_letters.append(l)
-                word_letters.pop(i)
+                word_letters.pop(''.join(word_letters).find(l))
+                correct_letters.append([l,i])
             elif l in word_letters:
-                present_letters.append(l)
+                word_letters.pop(''.join(word_letters).find(l))
+                present_letters.append([l,i])
             else:
-                absent_letters.append(l)
+                absent_letters.append([l,i])
 
     printc(str(correct_letters),"correct_letters: ", -13)
     printc(str(present_letters),"present_letters: ", -12)
     printc(str(absent_letters),"absent_letters: ", -11)
     printc(str(word_letters),"word_letters: ", -10)
+    for item in correct_letters:
+        stdscr.addch(y,x+(item[1]*2),item[0],correct_f)
+    for item in present_letters:
+        stdscr.addch(y,x+(item[1]*2),item[0],present_f)
+    for item in absent_letters:
+        stdscr.addch(y,x+(item[1]*2),item[0],absent_f)
 
 
 
@@ -116,6 +129,9 @@ guess1x = grid_x+1
 
 
 def main(stdscr):
+    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_WHITE)
+    curses.init_pair(2, curses.COLOR_RED, curses.COLOR_WHITE)
+    curses.init_pair(3, curses.COLOR_RED, curses.COLOR_WHITE)
     curses.curs_set(0)
     stdscr.clear()
     grid(grid_y,grid_x,try_count)
