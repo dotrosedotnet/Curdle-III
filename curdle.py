@@ -3,14 +3,13 @@
 import curses
 from curses import wrapper
 from time import sleep
-import logging
 
 stdscr = curses.initscr()
 
 word = ("stops").upper()
 
-grid_x = 0
-grid_y = 0
+grid_x = 10
+grid_y = 10
 try_count = 6
 letter_count = 5
 
@@ -87,6 +86,10 @@ def a_guess(y,x,l):
 
 
 
+# InCORRECT PRESENT WHEN ACTUALLY CORRECT
+# marks letter as correct, and then overrides as present!!
+# need to save letter instance as correct
+# removing from word not adequate. need to actually mark with tuples!
 def check_guess(y,x):
     correct_f = curses.color_pair(1)
     present_f = curses.color_pair(2)
