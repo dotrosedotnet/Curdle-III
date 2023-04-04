@@ -3,7 +3,7 @@
 import curses
 from curses import wrapper
 from time import sleep
-import pdb
+import logging
 
 stdscr = curses.initscr()
 
@@ -94,7 +94,9 @@ def check_guess(y,x):
     absent_f = curses.color_pair(3)
     this_guess = a_guess(y,x,letter_count)
     correct_letters = []
+    correct_popped = []
     present_letters = []
+    present_popped = []
     absent_letters = []
     word_letters = []
     if this_guess == word:
@@ -103,18 +105,19 @@ def check_guess(y,x):
         word_letters = list(word)
         for i, l in enumerate(list(this_guess)):
             if word[i] == this_guess[i]:
-                word_letters.pop(''.join(word_letters).find(l))
+                correct_popped.append(word_letters.pop(i))
                 correct_letters.append([l,i])
-            elif l in word_letters:
-                word_letters.pop(''.join(word_letters).find(l))
+        for i, l in enumerate(list(this_guess)):
+            if l in word_letters:
+                present_popped.append(word_letters.pop(word_letters.index(l)))
                 present_letters.append([l,i])
-            else:
-                absent_letters.append([l,i])
 
     printc(str(correct_letters),"correct_letters: ", -13)
     printc(str(present_letters),"present_letters: ", -12)
     printc(str(absent_letters),"absent_letters: ", -11)
     printc(str(word_letters),"word_letters: ", -10)
+    printc(str(correct_popped),"correct popped: ", -9)
+    printc(str(present_popped),"present popped: ", -8)
     for item in correct_letters:
         stdscr.addch(y,x+(item[1]*2),item[0],correct_f)
     for item in present_letters:
@@ -129,9 +132,9 @@ guess1x = grid_x+1
 
 
 def main(stdscr):
-    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_WHITE)
-    curses.init_pair(2, curses.COLOR_RED, curses.COLOR_WHITE)
-    curses.init_pair(3, curses.COLOR_RED, curses.COLOR_WHITE)
+    curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_GREEN)
+    curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_YELLOW)
+    curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_RED)
     curses.curs_set(0)
     stdscr.clear()
     grid(grid_y,grid_x,try_count)
