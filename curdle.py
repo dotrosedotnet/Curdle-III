@@ -90,6 +90,7 @@ def a_guess(y,x,l):
 # marks letter as correct, and then overrides as present!!
 # need to save letter instance as correct
 # removing from word not adequate. need to actually mark with tuples!
+
 def check_guess(y,x):
     correct_f = curses.color_pair(1)
     present_f = curses.color_pair(2)
@@ -104,14 +105,12 @@ def check_guess(y,x):
     if this_guess == word:
         printc("SUCCESS!","Success?: ", -5)
     else:
-        word_letters = list(word)
+        word_letters = list(zip(list(word), list(""*letter_count)))
         for i, l in enumerate(list(this_guess)):
             if word[i] == this_guess[i]:
-                correct_popped.append(word_letters.pop(word_letters.index(l)))
                 correct_letters.append([l,i])
         for i, l in enumerate(list(this_guess)):
             if l in word_letters:
-                present_popped.append(word_letters.pop(word_letters.index(l)))
                 present_letters.append([l,i])
 
     printc(str(correct_letters),"correct_letters: ", -13)
