@@ -23,7 +23,6 @@ grid_rows = {
     "grid_close": ""
 }
 
-guess = list(" "*5)
 
 def printc(string,label="",yoffset=0):
     rows, cols = stdscr.getmaxyx()
@@ -79,7 +78,7 @@ def a_guess(y,x,l):
 
         printc(str(len(guess_list)),"guess_list len: ", -16)
         # ADD LEGITIMATE WORD STIPULATION
-        if len(guess_list) == 5:
+        if len(guess_list) == letter_count:
             if letter in ('\n', '\r', 'KEY_ENTER'):
                 this_guess = this_guess.upper()
                 printc(this_guess.ljust(cols),"this guess: ", -14)
@@ -105,7 +104,7 @@ def check_guess(y,x):
         word_letters = list(word)
         for i, l in enumerate(list(this_guess)):
             if word[i] == this_guess[i]:
-                correct_popped.append(word_letters.pop(i))
+                correct_popped.append(word_letters.pop(word_letters.index(l)))
                 correct_letters.append([l,i])
         for i, l in enumerate(list(this_guess)):
             if l in word_letters:
@@ -126,6 +125,14 @@ def check_guess(y,x):
         stdscr.addch(y,x+(item[1]*2),item[0],absent_f)
 
 
+def guess_conveyor(y,x):
+    guesses = 0
+    while guesses < try_count:
+        check_guess(y,x)
+        guesses += 1
+        y += 2
+
+
 
 guess1y = grid_y+1
 guess1x = grid_x+1
@@ -138,7 +145,7 @@ def main(stdscr):
     curses.curs_set(0)
     stdscr.clear()
     grid(grid_y,grid_x,try_count)
-    check_guess(guess1y,guess1x)
+    guess_conveyor(guess1y,guess1x)
     stdscr.refresh()
     sleep(100)
     curses.curs_set(1)
