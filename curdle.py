@@ -85,11 +85,6 @@ def a_guess(y,x,l):
         printc(str(submitted),"submitted: ", -15)
 
 
-# InCORRECT PRESENT WHEN ACTUALLY CORRECT
-# marks letter as correct, and then overrides as present!!
-# need to save letter instance as correct
-# removing from word not adequate. need to actually mark with tuples!
-
 def check_guess(y,x):
     correct_f = curses.color_pair(1)
     present_f = curses.color_pair(2)
@@ -107,6 +102,7 @@ def check_guess(y,x):
         for l in list(word):
             stdscr.addch(y,x,l,correct_f)
             x += 2
+        # need to mark success and stop taking guesses now
     else:
         score = {}
         for i, l in enumerate(list(this_guess)):
