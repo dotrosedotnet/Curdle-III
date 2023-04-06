@@ -8,8 +8,8 @@ stdscr = curses.initscr()
 
 word = ("stops").upper()
 
-grid_x = 10
-grid_y = 10
+grid_x = 0
+grid_y = 0
 try_count = 6
 letter_count = 5
 
@@ -85,7 +85,6 @@ def a_guess(y,x,l):
         printc(str(submitted),"submitted: ", -15)
 
 
-
 # InCORRECT PRESENT WHEN ACTUALLY CORRECT
 # marks letter as correct, and then overrides as present!!
 # need to save letter instance as correct
@@ -102,29 +101,83 @@ def check_guess(y,x):
     present_popped = []
     absent_letters = []
     word_letters = []
+    break_flag = False
     if this_guess == word:
         printc("SUCCESS!","Success?: ", -5)
+        for l in list(word):
+            stdscr.addch(y,x,l,correct_f)
+            x += 2
     else:
-        word_letters = list(zip(list(word), list(""*letter_count)))
+        score = {}
+        for i, l in enumerate(list(this_guess)):
+            score.update(
+                {i:
+                    {l: 0}
+                }
+            )
+
+        word_letter_count = {}
+
+        for l in list(word):
+            if l in word_letter_count.keys():
+                previous_quant = word_letter_count.get(l)
+                word_letter_count.update({l:(previous_quant+1)})
+            else:
+                word_letter_count.update({l:1})
+
+        printc(str(word_letter_count),"WLC: ",0)
+
+        # count missing letters
+        for i, l in enumerate(list(this_guess)):
+            if l not in list(word):
+                score[i].update({l: 3})
+                absent_letters.append([l,i])
+
+        # check correct letters
         for i, l in enumerate(list(this_guess)):
             if word[i] == this_guess[i]:
+                score[i].update({l: 1})
                 correct_letters.append([l,i])
+                word_letter_count[l] -= 1
+
+        # check present letters
         for i, l in enumerate(list(this_guess)):
-            if l in word_letters:
+            # if l in word, isn't already marked present, and isn't already marked correct
+            if l in list(word) and word_letter_count[l] > 0 and score[i].get(l) == 0:
+                word_letter_count[l] -= 1
+                score[i].update({l: 2})
                 present_letters.append([l,i])
 
+
+        printc(str(word_letter_count),"WLC: ",1)
+
+        for (i, d) in score.items():
+            printc(this_guess[i],"l: ",-1)
+            printc(str(d[this_guess[i]]),"s: ",-2)
+            stdscr.refresh()
+            sleep(0.04)
+            if d[this_guess[i]] == 3:
+                stdscr.addch(y,x+(i*2),this_guess[i],absent_f)
+            if d[this_guess[i]] == 2:
+                stdscr.addch(y,x+(i*2),this_guess[i],present_f)
+            if d[this_guess[i]] == 1:
+                stdscr.addch(y,x+(i*2),this_guess[i],correct_f)
+        printc(str(score),"score: ", -3)
+
+    # printc(str(score),"score: ", -4)
+    printc(this_guess,"this_guess: ", -6)
+    printc(word,"word: ", -5)
+    # printc(str(score),"score: ", -7)
     printc(str(correct_letters),"correct_letters: ", -13)
     printc(str(present_letters),"present_letters: ", -12)
     printc(str(absent_letters),"absent_letters: ", -11)
     printc(str(word_letters),"word_letters: ", -10)
     printc(str(correct_popped),"correct popped: ", -9)
     printc(str(present_popped),"present popped: ", -8)
-    for item in correct_letters:
-        stdscr.addch(y,x+(item[1]*2),item[0],correct_f)
-    for item in present_letters:
-        stdscr.addch(y,x+(item[1]*2),item[0],present_f)
-    for item in absent_letters:
-        stdscr.addch(y,x+(item[1]*2),item[0],absent_f)
+    # for item in present_letters:
+    #     stdscr.addch(y,x+(item[1]*2),item[0],present_f)
+    # for item in absent_letters:
+    #     stdscr.addch(y,x+(item[1]*2),item[0],absent_f)
 
 
 def guess_conveyor(y,x):
