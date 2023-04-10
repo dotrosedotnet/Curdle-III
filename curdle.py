@@ -103,6 +103,7 @@ def check_guess(y,x):
             stdscr.addch(y,x,l,correct_f)
             x += 2
         # need to mark success and stop taking guesses now
+        return True
     else:
         score = {}
         for i, l in enumerate(list(this_guess)):
@@ -174,15 +175,17 @@ def check_guess(y,x):
     #     stdscr.addch(y,x+(item[1]*2),item[0],present_f)
     # for item in absent_letters:
     #     stdscr.addch(y,x+(item[1]*2),item[0],absent_f)
+    return False
 
 
 def guess_conveyor(y,x):
+    success = False
     guesses = 0
-    while guesses < try_count:
-        check_guess(y,x)
+    while guesses < try_count and success == False:
+        success = check_guess(y,x)
         guesses += 1
         y += 2
-
+        printc(str(success),"success: ",1)
 
 
 guess1y = grid_y+1
@@ -198,7 +201,7 @@ def main(stdscr):
     grid(grid_y,grid_x,try_count)
     guess_conveyor(guess1y,guess1x)
     stdscr.refresh()
-    sleep(100)
+    sleep(3)
     curses.curs_set(1)
 
 
