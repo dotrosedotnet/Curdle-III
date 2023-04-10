@@ -3,15 +3,26 @@
 import curses
 from curses import wrapper
 from time import sleep
+import random
 
 stdscr = curses.initscr()
-
-word = ("stops").upper()
 
 grid_x = 0
 grid_y = 0
 try_count = 6
 letter_count = 5
+
+# word = ("stops").upper()
+
+words = []
+
+with open("scrabble.txt", mode='r', encoding='utf-8') as f:
+    for item in f:
+        if len(item) == (letter_count + 1):
+            words.append(str.rstrip(item).upper())
+
+
+word = str(words[random.randint(0,len(words)-1)]).upper()
 
 line_parts = ["┌","─┬","─┐","│" ," │"," │","├" ,"─┼","─┤","└" ,"─┴","─┘",]
 
@@ -64,25 +75,25 @@ def a_guess(y,x,l):
         elif letter in ('KEY_BACKSPACE', '\b', '\x7f'):
             this_guess = this_guess[:-1]
             del_ch = x+(len(this_guess)*2)
-        printc(this_guess.ljust(cols),"this guess: ", -20)
-        printc(str(len(this_guess)).ljust(cols),"guess len: ", -19)
+        # printc(this_guess.ljust(cols),"this guess: ", -20)
+        # printc(str(len(this_guess)).ljust(cols),"guess len: ", -19)
 
         # printing in grid begins here
         guess_list = list(this_guess)
         printable = '│'.join(this_guess).upper()
         stdscr.addch(y,del_ch," ")
         stdscr.addstr(y,x,printable)
-        printc(str(guess_list),"guess list: ", -18)
-        printc(printable,"printable: ", -17)
+        # printc(str(guess_list),"guess list: ", -18)
+        # printc(printable,"printable: ", -17)
 
-        printc(str(len(guess_list)),"guess_list len: ", -16)
+        # printc(str(len(guess_list)),"guess_list len: ", -16)
         # ADD LEGITIMATE WORD STIPULATION
-        if len(guess_list) == letter_count:
+        if len(guess_list) == letter_count and this_guess.upper() in words:
             if letter in ('\n', '\r', 'KEY_ENTER'):
                 this_guess = this_guess.upper()
-                printc(this_guess.ljust(cols),"this guess: ", -14)
+                # printc(this_guess.ljust(cols),"this guess: ", -14)
                 return this_guess
-        printc(str(submitted),"submitted: ", -15)
+        # printc(str(submitted),"submitted: ", -15)
 
 
 def check_guess(y,x):
@@ -122,7 +133,7 @@ def check_guess(y,x):
             else:
                 word_letter_count.update({l:1})
 
-        printc(str(word_letter_count),"WLC: ",0)
+        # printc(str(word_letter_count),"WLC: ",0)
 
         # count missing letters
         for i, l in enumerate(list(this_guess)):
@@ -146,11 +157,11 @@ def check_guess(y,x):
                 present_letters.append([l,i])
 
 
-        printc(str(word_letter_count),"WLC: ",1)
+        # printc(str(word_letter_count),"WLC: ",1)
 
         for (i, d) in score.items():
-            printc(this_guess[i],"l: ",-1)
-            printc(str(d[this_guess[i]]),"s: ",-2)
+            # printc(this_guess[i],"l: ",-1)
+            # printc(str(d[this_guess[i]]),"s: ",-2)
             stdscr.refresh()
             sleep(0.04)
             if d[this_guess[i]] == 3:
@@ -159,18 +170,18 @@ def check_guess(y,x):
                 stdscr.addch(y,x+(i*2),this_guess[i],present_f)
             if d[this_guess[i]] == 1:
                 stdscr.addch(y,x+(i*2),this_guess[i],correct_f)
-        printc(str(score),"score: ", -3)
+        # printc(str(score),"score: ", -3)
 
     # printc(str(score),"score: ", -4)
-    printc(this_guess,"this_guess: ", -6)
-    printc(word,"word: ", -5)
+    # printc(this_guess,"this_guess: ", -6)
+    printc(word,"word: ", 0)
     # printc(str(score),"score: ", -7)
-    printc(str(correct_letters),"correct_letters: ", -13)
-    printc(str(present_letters),"present_letters: ", -12)
-    printc(str(absent_letters),"absent_letters: ", -11)
-    printc(str(word_letters),"word_letters: ", -10)
-    printc(str(correct_popped),"correct popped: ", -9)
-    printc(str(present_popped),"present popped: ", -8)
+    # printc(str(correct_letters),"correct_letters: ", -13)
+    # printc(str(present_letters),"present_letters: ", -12)
+    # printc(str(absent_letters),"absent_letters: ", -11)
+    # printc(str(word_letters),"word_letters: ", -10)
+    # printc(str(correct_popped),"correct popped: ", -9)
+    # printc(str(present_popped),"present popped: ", -8)
     # for item in present_letters:
     #     stdscr.addch(y,x+(item[1]*2),item[0],present_f)
     # for item in absent_letters:
