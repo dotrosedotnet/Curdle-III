@@ -33,11 +33,13 @@ grid_rows = {
     "grid_close": ""
 }
 
+# debugging printing made easyish
 def printc(string,label="",yoffset=0):
     rows, cols = stdscr.getmaxyx()
     stdscr.addstr(rows-5+yoffset, 1,"".ljust(cols))
     stdscr.addstr(rows-5+yoffset, 1, ''.join([label,string]))
 
+# assemble grid rows
 p = 0
 for k, v in grid_rows.items():
     grid_rows[k] = line_parts[p]
@@ -47,7 +49,7 @@ for k, v in grid_rows.items():
     grid_rows[k] = grid_rows[k]+line_parts[p]
     p += 1
 
-
+# make grid
 def grid(y,x,try_count):
     stdscr.addstr(y,x,grid_rows['grid_open'])
     i=1
@@ -86,7 +88,8 @@ def a_guess(y,x,l):
         # printc(printable,"printable: ", -17)
 
         # printc(str(len(guess_list)),"guess_list len: ", -16)
-        # ADD LEGITIMATE WORD STIPULATION
+
+        # if word is correct length and in the word list, allow submission
         if len(guess_list) == letter_count and this_guess.upper() in words:
             if letter in ('\n', '\r', 'KEY_ENTER'):
                 this_guess = this_guess.upper()
@@ -95,6 +98,17 @@ def a_guess(y,x,l):
         # printc(str(submitted),"submitted: ", -15)
 
 used_letters = []
+
+# def used_letter_graph(y,x,letters):
+#     line_one = "Q W E R T Y U I O P"
+#     line_two = "A S D F G H J K L"
+#     line_three = "Z X C V B N M"
+#     stdscr.addstr(grid_y+(try_count*2)+2,1,line_one)
+#     stdscr.addstr(grid_y+(try_count*2)+3,2,line_two)
+#     stdscr.addstr(grid_y+(try_count*2)+4,4,line_three)
+#     for l in letters:
+#         pass
+
 
 def check_guess(y,x):
     correct_f = curses.color_pair(1)
@@ -107,18 +121,20 @@ def check_guess(y,x):
     present_popped = []
     absent_letters = []
     word_letters = []
+    # add letters to used_letters
     for l in list(this_guess.upper()):
         if l in used_letters:
             pass
         else:
             used_letters.append(l.upper())
+    # used_letter_graph goes here?
     if this_guess == word:
         printc("SUCCESS!","Success?: ", -5)
+        # mark success
         for l in list(word):
             stdscr.addch(y,x,l,correct_f)
             x += 2
-        # need to mark success and stop taking guesses now
-        # marks success = True in outer function
+        # returns success = True in outer function
         return True
     else:
         score = {}
@@ -140,7 +156,9 @@ def check_guess(y,x):
 
         # printc(str(word_letter_count),"WLC: ",0)
 
-        # count missing letters
+        # SEPERATE SCORES FOR EACH OUTCOME
+
+        # count absent letters
         for i, l in enumerate(list(this_guess)):
             if l not in list(word):
                 score[i].update({l: 3})
@@ -154,6 +172,7 @@ def check_guess(y,x):
                 word_letter_count[l] -= 1
 
         # check present letters
+        # IF!!! letter already marked correct in a different position, won't be marked wrong in another position
         for i, l in enumerate(list(this_guess)):
             # if l in word, isn't already marked present, and isn't already marked correct
             if l in list(word) and word_letter_count[l] > 0 and score[i].get(l) == 0:
@@ -161,9 +180,16 @@ def check_guess(y,x):
                 score[i].update({l: 2})
                 present_letters.append([l,i])
 
+        # ADD OTHER LETTERS AS WRONG
+        """
+        Is there a better way to do this?
+
+        If a letter is not marked absent because it's
+        """
 
         # printc(str(word_letter_count),"WLC: ",1)
 
+        # MARK LETTERS
         for (i, d) in score.items():
             # printc(this_guess[i],"l: ",-1)
             # printc(str(d[this_guess[i]]),"s: ",-2)
@@ -175,7 +201,7 @@ def check_guess(y,x):
                 stdscr.addch(y,x+(i*2),this_guess[i],present_f)
             if d[this_guess[i]] == 1:
                 stdscr.addch(y,x+(i*2),this_guess[i],correct_f)
-        # printc(str(score),"score: ", -3)
+        printc(str(score),"score: ", -3)
 
     # printc(str(score),"score: ", -4)
     # printc(this_guess,"this_guess: ", -6)
@@ -193,14 +219,6 @@ def check_guess(y,x):
     #     stdscr.addch(y,x+(item[1]*2),item[0],absent_f)
     return False
 
-def used_letter_graph(y,x):
-    line_one = "Q W E R T Y U I O P"
-    line_two = "A S D F G H J K L"
-    line_three = "Z X C V B N M"
-    stdscr.addstr(grid_y+(try_count*2)+2,1,line_one)
-    stdscr.addstr(grid_y+(try_count*2)+3,2,line_two)
-    stdscr.addstr(grid_y+(try_count*2)+4,4,line_three)
-
 
 def guess_conveyor(y,x):
     success = False
@@ -212,10 +230,6 @@ def guess_conveyor(y,x):
         printc(str(success),"success: ",1)
 
 
-guess1y = grid_y+1
-guess1x = grid_x+1
-
-
 def main(stdscr):
     curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_GREEN)
     curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_YELLOW)
@@ -223,12 +237,12 @@ def main(stdscr):
     curses.curs_set(0)
     stdscr.clear()
     grid(grid_y,grid_x,try_count)
-    used_letter_graph(grid_y,grid_x)
-    guess_conveyor(guess1y,guess1x)
+    guess_conveyor(grid_y+1,grid_x+1)
     stdscr.refresh()
     sleep(3)
     curses.curs_set(1)
 
 
-wrapper(main)
+if __name__ == "__main__":
+    wrapper(main)
 
