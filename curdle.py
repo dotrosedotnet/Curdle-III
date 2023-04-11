@@ -33,7 +33,6 @@ grid_rows = {
     "grid_close": ""
 }
 
-
 def printc(string,label="",yoffset=0):
     rows, cols = stdscr.getmaxyx()
     stdscr.addstr(rows-5+yoffset, 1,"".ljust(cols))
@@ -95,6 +94,7 @@ def a_guess(y,x,l):
                 return this_guess
         # printc(str(submitted),"submitted: ", -15)
 
+used_letters = []
 
 def check_guess(y,x):
     correct_f = curses.color_pair(1)
@@ -107,13 +107,18 @@ def check_guess(y,x):
     present_popped = []
     absent_letters = []
     word_letters = []
-    break_flag = False
+    for l in list(this_guess.upper()):
+        if l in used_letters:
+            pass
+        else:
+            used_letters.append(l.upper())
     if this_guess == word:
         printc("SUCCESS!","Success?: ", -5)
         for l in list(word):
             stdscr.addch(y,x,l,correct_f)
             x += 2
         # need to mark success and stop taking guesses now
+        # marks success = True in outer function
         return True
     else:
         score = {}
@@ -188,6 +193,14 @@ def check_guess(y,x):
     #     stdscr.addch(y,x+(item[1]*2),item[0],absent_f)
     return False
 
+def used_letter_graph(y,x):
+    line_one = "Q W E R T Y U I O P"
+    line_two = "A S D F G H J K L"
+    line_three = "Z X C V B N M"
+    stdscr.addstr(grid_y+(try_count*2)+2,1,line_one)
+    stdscr.addstr(grid_y+(try_count*2)+3,2,line_two)
+    stdscr.addstr(grid_y+(try_count*2)+4,4,line_three)
+
 
 def guess_conveyor(y,x):
     success = False
@@ -210,6 +223,7 @@ def main(stdscr):
     curses.curs_set(0)
     stdscr.clear()
     grid(grid_y,grid_x,try_count)
+    used_letter_graph(grid_y,grid_x)
     guess_conveyor(guess1y,guess1x)
     stdscr.refresh()
     sleep(3)
