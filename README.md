@@ -12,13 +12,11 @@ one.
 
 Some hopes for this attempt:
 
-- [ ] appropriate use of for loops, functions
-- [ ] clean, readable code
-- [ ] separation of processes
-	- [ ] separate guess creation from guess printing
-	- [ ] separate guess feedback from guess creation/printing
-		- [ ] feedback in grid (letter in word/not in word/in
-				the correct position)
-		- [ ] feedback in keyboard representation of letters
-				guessed
-- [ ] learn more!
+- appropriate use of for loops, functions
+- clean, readable code
+- separation of processes
+	- separate guess creation from guess printing
+	- separate guess feedback from guess creation/printing
+		- feedback in grid (letter in word/not in word/in	the correct position)
+		- feedback in keyboard representation of letters guessed
+- learn more!
