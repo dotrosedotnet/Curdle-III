@@ -7,10 +7,12 @@ import random
 
 stdscr = curses.initscr()
 
-grid_x = 0
-grid_y = 0
+rows, cols = stdscr.getmaxyx()
+
 try_count = 6
 letter_count = 5
+grid_x = (round(cols/2)-letter_count)
+grid_y = (round(rows/10))
 
 # word = ("stops").upper()
 
@@ -36,6 +38,7 @@ grid_rows = {
 # debugging printing made easyish
 def printc(string,label="",yoffset=0):
     rows, cols = stdscr.getmaxyx()
+    string = str(string)
     stdscr.addstr(rows-5+yoffset, 1,"".ljust(cols))
     stdscr.addstr(rows-5+yoffset, 1, ''.join([label,string]))
 
@@ -97,7 +100,6 @@ def a_guess(y,x,l):
                 return this_guess
         # printc(str(submitted),"submitted: ", -15)
 
-used_letters = []
 
 # def used_letter_graph(y,x,letters):
 #     line_one = "Q W E R T Y U I O P"
@@ -115,102 +117,75 @@ def check_guess(y,x):
     present_f = curses.color_pair(2)
     absent_f = curses.color_pair(3)
     this_guess = a_guess(y,x,letter_count)
-    correct_letters = []
-    correct_popped = []
-    present_letters = []
-    present_popped = []
-    absent_letters = []
-    word_letters = []
-    # add letters to used_letters
-    for l in list(this_guess.upper()):
-        if l in used_letters:
-            pass
-        else:
-            used_letters.append(l.upper())
-    # used_letter_graph goes here?
+
     if this_guess == word:
         printc("SUCCESS!","Success?: ", -5)
-        # mark success
         for l in list(word):
             stdscr.addch(y,x,l,correct_f)
             x += 2
-        # returns success = True in outer function
         return True
     else:
-        score = {}
+        scores = {}
         for i, l in enumerate(list(this_guess)):
-            score.update(
+            scores.update(
                 {i:
-                    {l: 0}
+                    {"letter": l, "correct": 0, "present": 0, "absent": 0}
                 }
             )
 
-        word_letter_count = {}
+
+        letter_amounts = {}
 
         for l in list(word):
-            if l in word_letter_count.keys():
-                previous_quant = word_letter_count.get(l)
-                word_letter_count.update({l:(previous_quant+1)})
+            if l not in letter_amounts.keys():
+                letter_amounts.update({l: 1})
             else:
-                word_letter_count.update({l:1})
+                letter_amounts[l] = letter_amounts[l] + 1
 
-        # printc(str(word_letter_count),"WLC: ",0)
-
-        # SEPERATE SCORES FOR EACH OUTCOME
-
-        # count absent letters
+        # score word
         for i, l in enumerate(list(this_guess)):
             if l not in list(word):
-                score[i].update({l: 3})
-                absent_letters.append([l,i])
+                scores[i]["absent"] = 1
+            if l == word[i]:
+                scores[i]["correct"] = 1
+            if l in list(word):
+                scores[i]["present"] = 1
+                letter_amounts[l] = letter_amounts[l]-1
 
-        # check correct letters
-        for i, l in enumerate(list(this_guess)):
-            if word[i] == this_guess[i]:
-                score[i].update({l: 1})
-                correct_letters.append([l,i])
-                word_letter_count[l] -= 1
+        printc(scores,"scores:  ",-4)
+        printc(word,"word: ", 0)
+        # look over word, checking each letter for its three scores
+        # if letter is in word, count instances
+        for k, v in scores.items():
+            if v["absent"] == 1:
+                stdscr.addch(y,x+(k*2),v["letter"],absent_f)
+            if v["correct"] == 1 and letter_amounts[v["letter"]] != 0:
+                stdscr.addch(y,x+(k*2),v["letter"],correct_f)
+                letter_amounts[v["letter"]] = letter_amounts[v["letter"]]-1
+            if v["present"] == 1 and letter_amounts[v["letter"]] != 0:
+                stdscr.addch(y,x+(k*2),v["letter"],present_f)
+                letter_amounts[v["letter"]] = letter_amounts[v["letter"]]-1
 
-        # check present letters
-        # IF!!! letter already marked correct in a different position, won't be marked wrong in another position
-        for i, l in enumerate(list(this_guess)):
-            # if l in word, isn't already marked present, and isn't already marked correct
-            if l in list(word) and word_letter_count[l] > 0 and score[i].get(l) == 0:
-                word_letter_count[l] -= 1
-                score[i].update({l: 2})
-                present_letters.append([l,i])
+        printc(letter_amounts,"l #: ",-5)
 
-        # ADD OTHER LETTERS AS WRONG
-        """
-        Is there a better way to do this?
-
-        If a letter is not marked absent because it's
-        """
-
-        # printc(str(word_letter_count),"WLC: ",1)
-
-        # MARK LETTERS
-        for (i, d) in score.items():
-            # printc(this_guess[i],"l: ",-1)
-            # printc(str(d[this_guess[i]]),"s: ",-2)
-            stdscr.refresh()
-            sleep(0.04)
-            if d[this_guess[i]] == 3:
-                stdscr.addch(y,x+(i*2),this_guess[i],absent_f)
-            if d[this_guess[i]] == 2:
-                stdscr.addch(y,x+(i*2),this_guess[i],present_f)
-            if d[this_guess[i]] == 1:
-                stdscr.addch(y,x+(i*2),this_guess[i],correct_f)
-        printc(str(score),"score: ", -3)
+        # for (i, d) in score.items():
+        #     # printc(this_guess[i],"l: ",-1)
+        #     # printc(str(d[this_guess[i]]),"s: ",-2)
+        #     stdscr.refresh()
+        #     sleep(0.04)
+        #     if d[this_guess[i]] == 3:
+        #         stdscr.addch(y,x+(i*2),this_guess[i],absent_f)
+        #     if d[this_guess[i]] == 2:
+        #         stdscr.addch(y,x+(i*2),this_guess[i],present_f)
+        #     if d[this_guess[i]] == 1:
+        #         stdscr.addch(y,x+(i*2),this_guess[i],correct_f)
+        # printc(str(score),"score: ", -3)
 
     # printc(str(score),"score: ", -4)
     # printc(this_guess,"this_guess: ", -6)
-    printc(word,"word: ", 0)
     # printc(str(score),"score: ", -7)
-    # printc(str(correct_letters),"correct_letters: ", -13)
     # printc(str(present_letters),"present_letters: ", -12)
     # printc(str(absent_letters),"absent_letters: ", -11)
-    # printc(str(word_letters),"word_letters: ", -10)
     # printc(str(correct_popped),"correct popped: ", -9)
     # printc(str(present_popped),"present popped: ", -8)
     # for item in present_letters:
