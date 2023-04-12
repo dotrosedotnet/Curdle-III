@@ -169,6 +169,11 @@ def check_guess(y,x):
 
             # mark as red if not present, or unmarked and 0
 
+            """
+            can I route this so that it goes through all letters repeatedly until it goes through each of the three?
+            for i in range(0,3) something?
+            """
+
             if v["absent"] == 1:
                 stdscr.addch(y,x+(k*2),l,absent_f)
 
