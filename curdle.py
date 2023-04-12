@@ -129,10 +129,9 @@ def check_guess(y,x):
         for i, l in enumerate(list(this_guess)):
             scores.update(
                 {i:
-                    {"letter": l, "correct": 0, "present": 0, "absent": 0}
+                 {"letter": l, "correct": 0, "present": 0, "absent": 0, "marked": 0}
                 }
             )
-
 
         letter_amounts = {}
 
@@ -150,22 +149,44 @@ def check_guess(y,x):
                 scores[i]["correct"] = 1
             if l in list(word):
                 scores[i]["present"] = 1
-                letter_amounts[l] = letter_amounts[l]-1
 
-        printc(scores,"scores:  ",-4)
+        # printc(scores,"scores:  ",-4)
         printc(word,"word: ", 0)
         # look over word, checking each letter for its three scores
         # if letter is in word, count instances
-        for k, v in scores.items():
-            if v["absent"] == 1:
-                stdscr.addch(y,x+(k*2),v["letter"],absent_f)
-            if v["correct"] == 1 and letter_amounts[v["letter"]] != 0:
-                stdscr.addch(y,x+(k*2),v["letter"],correct_f)
-                letter_amounts[v["letter"]] = letter_amounts[v["letter"]]-1
-            if v["present"] == 1 and letter_amounts[v["letter"]] != 0:
-                stdscr.addch(y,x+(k*2),v["letter"],present_f)
-                letter_amounts[v["letter"]] = letter_amounts[v["letter"]]-1
 
+        """
+        mark every correct letter first
+        then mark ever remaining present letter up to instances of that letter
+        then mark the difference absent
+
+        to go through corrects only:
+        """
+
+        for k, v in scores.items():
+
+            l = v["letter"]
+
+            # mark as red if not present, or unmarked and 0
+
+            if v["absent"] == 1:
+                stdscr.addch(y,x+(k*2),l,absent_f)
+
+            if v["correct"] == 1 and letter_amounts[l] > 0:
+                letter_amounts[l] = letter_amounts[l]-1
+                stdscr.addch(y,x+(k*2),l,correct_f)
+                v["marked"] = 1
+
+            if v["present"] == 1 and letter_amounts[l] > 0 and v["marked"] == 0:
+                letter_amounts[l] = letter_amounts[l]-1
+                stdscr.addch(y,x+(k*2),l,present_f)
+                v["marked"] = 1
+
+            # if letter_amounts.get(l) == 0 and v["marked"] == 0:
+            #     stdscr.addch(y,x+(k*2),l,absent_f)
+
+        for i, l in enumerate(scores.values()):
+            printc(l,"",-20+i)
         printc(letter_amounts,"l #: ",-5)
 
         # for (i, d) in score.items():
