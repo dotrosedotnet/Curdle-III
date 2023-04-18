@@ -114,10 +114,25 @@ def used_letter_graph(y,x,scores):
     stdscr.addstr(grid_y+(try_count*2)+3,center_x_two,line_two)
     stdscr.addstr(grid_y+(try_count*2)+4,center_x_three,line_three)
     keyboard_fb = {}
+
     for i, l in enumerate(list(abcs)):
         keyboard_fb.update(
-            {l: 0}
+            {l:
+             {"score": 0, "line": 0}
+             }
         )
+
+    for k, v in keyboard_fb.items():
+        letter = k
+        ldict = v
+        for key, value in ldict.items():
+            if k in line_one:
+                v["line"] = 1
+            elif k in line_two:
+                v["line"] = 2
+            else:
+                v["line"] = 3
+
     for k, v in scores.items():
         l = v["letter"]
         if v["absent"] == 1:
@@ -126,6 +141,8 @@ def used_letter_graph(y,x,scores):
             keyboard_fb[l] = 1
         if v["present"] == 1 and keyboard_fb[l] != 1:
             keyboard_fb[l] = 2
+    def print_kb_fb(letter, score):
+        for 
     for k, v in keyboard_fb.items():
         match v:
             case 1:
@@ -137,11 +154,6 @@ def used_letter_graph(y,x,scores):
             case 3:
                 # print correct
                 pass
-
-
-
-
-
 
 
 def check_guess(y,x):
