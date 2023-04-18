@@ -304,7 +304,7 @@ def guess_conveyor(y,x):
         success = check_guess(y,x)
         guesses += 1
         y += 2
-        printc(str(success),"success: ",1)
+        # printc(str(success),"success: ",1)
 
 
 def main(stdscr):
