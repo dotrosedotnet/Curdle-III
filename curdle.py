@@ -192,7 +192,7 @@ def used_letter_graph(y,x,scores,keyboard_fb_graph):
                         stdscr.addch(y_three,print_x,k,present_f)
                     case 1:
                         stdscr.addch(y_three,print_x,k,correct_f)
-    printc(keyboard_fb,"kb_fb: ",-10)
+    # printc(keyboard_fb,"kb_fb: ",-10)
 
 
 def check_guess(y,x):
@@ -234,9 +234,18 @@ def check_guess(y,x):
                 scores[i]["present"] = 1
 
         # printc(scores,"scores:  ",-4)
-        printc(word,"word: ", 0)
+        # printc(word,"word: ", 0)
         # look over word, checking each letter for its three scores
         # if letter is in word, count instances
+
+        for k, v in scores.items():
+
+            l = v["letter"]
+
+            if v["correct"] == 1 and letter_amounts[l] > 0:
+                letter_amounts[l] = letter_amounts[l]-1
+                stdscr.addch(y,x+(k*2),l,correct_f)
+                v["marked"] = 1
 
         for k, v in scores.items():
 
@@ -247,11 +256,6 @@ def check_guess(y,x):
             if v["absent"] == 1:
                 stdscr.addch(y,x+(k*2),l,absent_f)
 
-            if v["correct"] == 1 and letter_amounts[l] > 0:
-                letter_amounts[l] = letter_amounts[l]-1
-                stdscr.addch(y,x+(k*2),l,correct_f)
-                v["marked"] = 1
-
             if v["present"] == 1 and letter_amounts[l] > 0 and v["marked"] == 0:
                 letter_amounts[l] = letter_amounts[l]-1
                 stdscr.addch(y,x+(k*2),l,present_f)
@@ -260,9 +264,9 @@ def check_guess(y,x):
             if letter_amounts.get(l) == 0 and v["marked"] == 0:
                 stdscr.addch(y,x+(k*2),l,absent_f)
 
-        for i, l in enumerate(scores.values()):
-            printc(l,"",-20+i)
-        printc(letter_amounts,"l #: ",-5)
+        # for i, l in enumerate(scores.values()):
+            # printc(l,"",-20+i)
+        # printc(letter_amounts,"l #: ",-5)
 
         used_letter_graph(y,x,scores,keyboard_fb)
 
