@@ -103,6 +103,9 @@ def a_guess(y,x,l):
 
 
 def used_letter_graph(y,x,scores):
+    correct_f = curses.color_pair(1)
+    present_f = curses.color_pair(2)
+    absent_f = curses.color_pair(3)
     line_one = "Q W E R T Y U I O P"
     line_two = "A S D F G H J K L"
     line_three = "Z X C V B N M"
@@ -110,9 +113,12 @@ def used_letter_graph(y,x,scores):
     center_x_one = int(center-(round(len(line_one))/2))
     center_x_two = int(center-(round(len(line_two))/2))
     center_x_three = int(center-(round(len(line_three))/2))
-    stdscr.addstr(grid_y+(try_count*2)+2,center_x_one,line_one)
-    stdscr.addstr(grid_y+(try_count*2)+3,center_x_two,line_two)
-    stdscr.addstr(grid_y+(try_count*2)+4,center_x_three,line_three)
+    y_one = grid_y+(try_count*2)+2
+    y_two = grid_y+(try_count*2)+3
+    y_three = grid_y+(try_count*2)+4
+    stdscr.addstr(y_one,center_x_one,line_one)
+    stdscr.addstr(y_two,center_x_two,line_two)
+    stdscr.addstr(y_three,center_x_three,line_three)
     keyboard_fb = {}
 
     for i, l in enumerate(list(abcs)):
@@ -122,38 +128,53 @@ def used_letter_graph(y,x,scores):
              }
         )
 
-    for k, v in keyboard_fb.items():
-        letter = k
-        ldict = v
-        for key, value in ldict.items():
-            if k in line_one:
-                v["line"] = 1
-            elif k in line_two:
-                v["line"] = 2
-            else:
-                v["line"] = 3
+    for letter, ldict in keyboard_fb.items():
+        if letter in line_one:
+            ldict["line"] = 1
+        elif letter in line_two:
+            ldict["line"] = 2
+        else:
+            ldict["line"] = 3
 
     for k, v in scores.items():
         l = v["letter"]
         if v["absent"] == 1:
-            keyboard_fb[l] = 3
+            keyboard_fb[l]["score"] = 3
         if v["correct"] == 1:
-            keyboard_fb[l] = 1
-        if v["present"] == 1 and keyboard_fb[l] != 1:
-            keyboard_fb[l] = 2
-    def print_kb_fb(letter, score):
-        for 
+            keyboard_fb[l]["score"] = 1
+        if v["present"] == 1 and keyboard_fb[l]["score"] != 1:
+            keyboard_fb[l]["score"] = 2
+
     for k, v in keyboard_fb.items():
-        match v:
+        match v["line"]:
             case 1:
-                # print absent
-                pass
+                print_x = line_one.index(k)+center_x_one
+                match v["score"]:
+                    case 3:
+                        stdscr.addch(y_one,print_x,k,absent_f)
+                    case 2:
+                        stdscr.addch(y_one,print_x,k,present_f)
+                    case 1:
+                        stdscr.addch(y_one,print_x,k,correct_f)
             case 2:
-                # print present
-                pass
+                print_x = line_two.index(k)+center_x_two
+                match v["score"]:
+                    case 3:
+                        stdscr.addch(y_two,print_x,k,absent_f)
+                    case 2:
+                        stdscr.addch(y_two,print_x,k,present_f)
+                    case 1:
+                        stdscr.addch(y_two,print_x,k,correct_f)
             case 3:
-                # print correct
-                pass
+                print_x = line_three.index(k)+center_x_three
+                match v["score"]:
+                    case 3:
+                        stdscr.addch(y_three,print_x,k,absent_f)
+                    case 2:
+                        stdscr.addch(y_three,print_x,k,present_f)
+                    case 1:
+                        stdscr.addch(y_three,print_x,k,correct_f)
+    printc(keyboard_fb,"kb_fb: ",-10)
 
 
 def check_guess(y,x):
