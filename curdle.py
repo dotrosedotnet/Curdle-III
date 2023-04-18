@@ -101,8 +101,7 @@ def a_guess(y,x,l):
                 return this_guess
         # printc(str(submitted),"submitted: ", -15)
 
-
-def used_letter_graph(y,x,scores):
+def print_letter_graph(y,x):
     correct_f = curses.color_pair(1)
     present_f = curses.color_pair(2)
     absent_f = curses.color_pair(3)
@@ -119,14 +118,33 @@ def used_letter_graph(y,x,scores):
     stdscr.addstr(y_one,center_x_one,line_one)
     stdscr.addstr(y_two,center_x_two,line_two)
     stdscr.addstr(y_three,center_x_three,line_three)
-    keyboard_fb = {}
 
-    for i, l in enumerate(list(abcs)):
-        keyboard_fb.update(
-            {l:
-             {"score": 0, "line": 0}
-             }
-        )
+keyboard_fb = {}
+
+for i, l in enumerate(list(abcs)):
+    keyboard_fb.update(
+        {l:
+         {"score": 0, "line": 0}
+         }
+    )
+
+def used_letter_graph(y,x,scores,keyboard_fb_graph):
+    correct_f = curses.color_pair(1)
+    present_f = curses.color_pair(2)
+    absent_f = curses.color_pair(3)
+    line_one = "Q W E R T Y U I O P"
+    line_two = "A S D F G H J K L"
+    line_three = "Z X C V B N M"
+    center = int(round(cols/2))
+    center_x_one = int(center-(round(len(line_one))/2))
+    center_x_two = int(center-(round(len(line_two))/2))
+    center_x_three = int(center-(round(len(line_three))/2))
+    y_one = grid_y+(try_count*2)+2
+    y_two = grid_y+(try_count*2)+3
+    y_three = grid_y+(try_count*2)+4
+    # stdscr.addstr(y_one,center_x_one,line_one)
+    # stdscr.addstr(y_two,center_x_two,line_two)
+    # stdscr.addstr(y_three,center_x_three,line_three)
 
     for letter, ldict in keyboard_fb.items():
         if letter in line_one:
@@ -246,7 +264,7 @@ def check_guess(y,x):
             printc(l,"",-20+i)
         printc(letter_amounts,"l #: ",-5)
 
-        used_letter_graph(y,x,scores)
+        used_letter_graph(y,x,scores,keyboard_fb)
 
         # for (i, d) in score.items():
         #     # printc(this_guess[i],"l: ",-1)
@@ -292,6 +310,7 @@ def main(stdscr):
     curses.curs_set(0)
     stdscr.clear()
     grid(grid_y,grid_x,try_count)
+    print_letter_graph(grid_y,grid_x)
     guess_conveyor(grid_y+1,grid_x+1)
     stdscr.refresh()
     sleep(3)
