@@ -11,7 +11,7 @@ rows, cols = stdscr.getmaxyx()
 
 try_count = 6
 letter_count = 5
-grid_x = (round(cols/2)-letter_count)
+grid_x = (round(cols/2)-letter_count-1) # I do not know why -1 needed
 grid_y = (round(rows/10))
 
 # word = ("stops").upper()
@@ -101,15 +101,19 @@ def a_guess(y,x,l):
         # printc(str(submitted),"submitted: ", -15)
 
 
-# def used_letter_graph(y,x,letters):
-#     line_one = "Q W E R T Y U I O P"
-#     line_two = "A S D F G H J K L"
-#     line_three = "Z X C V B N M"
-#     stdscr.addstr(grid_y+(try_count*2)+2,1,line_one)
-#     stdscr.addstr(grid_y+(try_count*2)+3,2,line_two)
-#     stdscr.addstr(grid_y+(try_count*2)+4,4,line_three)
-#     for l in letters:
-#         pass
+def used_letter_graph(y,x,letters):
+    line_one = "Q W E R T Y U I O P"
+    line_two = "A S D F G H J K L"
+    line_three = "Z X C V B N M"
+    center = int(round(cols/2))
+    center_x_one = int(center-(round(len(line_one))/2))
+    center_x_two = int(center-(round(len(line_two))/2))
+    center_x_three = int(center-(round(len(line_three))/2))
+    stdscr.addstr(grid_y+(try_count*2)+2,center_x_one,line_one)
+    stdscr.addstr(grid_y+(try_count*2)+3,center_x_two,line_two)
+    stdscr.addstr(grid_y+(try_count*2)+4,center_x_three,line_three)
+    for l in letters:
+        pass
 
 
 def check_guess(y,x):
@@ -133,6 +137,11 @@ def check_guess(y,x):
                 }
             )
 
+
+        rows, cols = stdscr.getmaxyx()
+
+        used_letter_graph(y,x,list(this_guess))
+
         letter_amounts = {}
 
         for l in list(word):
@@ -155,24 +164,11 @@ def check_guess(y,x):
         # look over word, checking each letter for its three scores
         # if letter is in word, count instances
 
-        """
-        mark every correct letter first
-        then mark ever remaining present letter up to instances of that letter
-        then mark the difference absent
-
-        to go through corrects only:
-        """
-
         for k, v in scores.items():
 
             l = v["letter"]
 
             # mark as red if not present, or unmarked and 0
-
-            """
-            can I route this so that it goes through all letters repeatedly until it goes through each of the three?
-            for i in range(0,3) something?
-            """
 
             if v["absent"] == 1:
                 stdscr.addch(y,x+(k*2),l,absent_f)
@@ -187,8 +183,8 @@ def check_guess(y,x):
                 stdscr.addch(y,x+(k*2),l,present_f)
                 v["marked"] = 1
 
-            # if letter_amounts.get(l) == 0 and v["marked"] == 0:
-            #     stdscr.addch(y,x+(k*2),l,absent_f)
+            if letter_amounts.get(l) == 0 and v["marked"] == 0:
+                stdscr.addch(y,x+(k*2),l,absent_f)
 
         for i, l in enumerate(scores.values()):
             printc(l,"",-20+i)
