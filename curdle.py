@@ -4,6 +4,7 @@ import curses
 from curses import wrapper
 from time import sleep
 import random
+from string import ascii_uppercase as abcs
 
 stdscr = curses.initscr()
 
@@ -101,7 +102,7 @@ def a_guess(y,x,l):
         # printc(str(submitted),"submitted: ", -15)
 
 
-def used_letter_graph(y,x,letters):
+def used_letter_graph(y,x,scores):
     line_one = "Q W E R T Y U I O P"
     line_two = "A S D F G H J K L"
     line_three = "Z X C V B N M"
@@ -112,8 +113,35 @@ def used_letter_graph(y,x,letters):
     stdscr.addstr(grid_y+(try_count*2)+2,center_x_one,line_one)
     stdscr.addstr(grid_y+(try_count*2)+3,center_x_two,line_two)
     stdscr.addstr(grid_y+(try_count*2)+4,center_x_three,line_three)
-    for l in letters:
-        pass
+    keyboard_fb = {}
+    for i, l in enumerate(list(abcs)):
+        keyboard_fb.update(
+            {l: 0}
+        )
+    for k, v in scores.items():
+        l = v["letter"]
+        if v["absent"] == 1:
+            keyboard_fb[l] = 3
+        if v["correct"] == 1:
+            keyboard_fb[l] = 1
+        if v["present"] == 1 and keyboard_fb[l] != 1:
+            keyboard_fb[l] = 2
+    for k, v in keyboard_fb.items():
+        match v:
+            case 1:
+                # print absent
+                pass
+            case 2:
+                # print present
+                pass
+            case 3:
+                # print correct
+                pass
+
+
+
+
+
 
 
 def check_guess(y,x):
@@ -136,11 +164,6 @@ def check_guess(y,x):
                  {"letter": l, "correct": 0, "present": 0, "absent": 0, "marked": 0}
                 }
             )
-
-
-        rows, cols = stdscr.getmaxyx()
-
-        used_letter_graph(y,x,list(this_guess))
 
         letter_amounts = {}
 
@@ -189,6 +212,8 @@ def check_guess(y,x):
         for i, l in enumerate(scores.values()):
             printc(l,"",-20+i)
         printc(letter_amounts,"l #: ",-5)
+
+        used_letter_graph(y,x,scores)
 
         # for (i, d) in score.items():
         #     # printc(this_guess[i],"l: ",-1)
