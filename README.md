@@ -50,5 +50,4 @@ At the moment, that's done by editing the `letter_count` and
 - [ ] Add argument options
 	- [ ] Letter count
 	- [ ] Guess count
-- [ ] More feedback?
-	- [ ] Offer [Q]uit at any time?
+- [ ] Offer [Q]uit at any time?
