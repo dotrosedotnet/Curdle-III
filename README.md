@@ -56,4 +56,3 @@ At the moment, that's done by editing the `letter_count` and
 - make use of `*args` and `**kwargs`
 - use `pad` in `curses` to allow content beyond visible border
 - implement redrawing with window resizing
-- 
