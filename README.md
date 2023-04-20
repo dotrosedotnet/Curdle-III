@@ -52,7 +52,9 @@ At the moment, that's done by editing the `letter_count` and
 	- [ ] Guess count
 - [ ] Offer [Q]uit at any time?
 
-#### Aspirations for next project:
+#### Aspirations for next projects:
 - make use of `*args` and `**kwargs`
 - use `pad` in `curses` to allow content beyond visible border
 - implement `curses` redrawing with window resizing
+- grok and use list/dict recursion
+- cleaner code babyyyy
