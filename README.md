@@ -55,4 +55,4 @@ At the moment, that's done by editing the `letter_count` and
 #### Aspirations for next project:
 - make use of `*args` and `**kwargs`
 - use `pad` in `curses` to allow content beyond visible border
-- implement redrawing with window resizing
+- implement `curses` redrawing with window resizing
