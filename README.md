@@ -56,5 +56,5 @@ At the moment, that's done by editing the `letter_count` and
 - make use of `*args` and `**kwargs`
 - use `pad` in `curses` to allow content beyond visible border
 - implement `curses` redrawing with window resizing
-- grok and use list/dict recursion
+- grok and use list/dict comprehension
 - cleaner code babyyyy
