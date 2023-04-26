@@ -6,68 +6,70 @@ from time import sleep
 import random
 from string import ascii_uppercase as abcs
 
+""""
+as far as what Max taught me:
+
+restructuring is the part I'm really excited about here.
+
+classes are functions with their own data/datatypes?
+
+let's do some classes research...
+
+(before I'm doing classes research: another way to do this is to pass in a dict with all the necessary info to all functions which need it)
+
+Max spoke a lot about "functions as subroutines"
+""""
+
+TRY_COUNT = 6
+LETTER_COUNT = 5
+
+# collecting print stuff
 stdscr = curses.initscr()
-
 rows, cols = stdscr.getmaxyx()
-
-try_count = 6
-letter_count = 5
-grid_x = (round(cols/2)-letter_count-1) # I do not know why -1 needed
-grid_y = (round(rows/10))
+grid_x = (round(cols / 2) - letter_count - 1)
+grid_y = (round(rows / 10))
 
 # word = ("stops").upper()
 
-words = []
+WORDS = []
 
 with open("scrabble.txt", mode='r', encoding='utf-8') as f:
     for item in f:
         if len(item) == (letter_count + 1):
             words.append(str.rstrip(item).upper())
 
+WORD = str(words[random.randint(0,len(words)-1)]).upper()
 
-word = str(words[random.randint(0,len(words)-1)]).upper()
+def repeat(thing, n):
+    return [thing for _ in range(n)]
 
-line_parts = ["┌","─┬","─┐","│" ," │"," │","├" ,"─┼","─┤","└" ,"─┴","─┘",]
-
-grid_rows = {
-    "grid_open": "",
-    "grid_try": "",
-    "grid_break": "",
-    "grid_close": ""
+GRID_ROWS = {
+    "grid_open" :  "┌" + '┬'.join(repeat("─",LETTER_COUNT)) + "┐",
+    "grid_try" :   "│" + '│'.join(repeat(" ",LETTER_COUNT)) + "│",
+    "grid_break" : "├" + '┼'.join(repeat("─",LETTER_COUNT)) + "┤",
+    "grid_close" : "└" + '┴'.join(repeat("─",LETTER_COUNT)) + "┘",
 }
 
-# debugging printing made easyish
+GRID = '''\
+{grid_open}
+{grid_repeat}
+{grid_close}\
+'''.format(
+    **GRID_ROWS,
+    grid_repeat = "\n".join(repeat(GRID_ROWS["grid_break"] + "\n" + GRID_ROWS["grid_try"], TRY_COUNT))
+)
+
+
+# debugging printing made easyish (replace this with a file/tail)
 def printc(string,label="",yoffset=0):
     rows, cols = stdscr.getmaxyx()
     string = str(string)
     stdscr.addstr(rows-5+yoffset, 1,"".ljust(cols))
     stdscr.addstr(rows-5+yoffset, 1, ''.join([label,string]))
 
-# assemble grid rows
-p = 0
-for k, v in grid_rows.items():
-    grid_rows[k] = line_parts[p]
-    p += 1
-    grid_rows[k] = grid_rows[k]+(line_parts[p] * (letter_count-1))
-    p += 1
-    grid_rows[k] = grid_rows[k]+line_parts[p]
-    p += 1
-
-# make grid
-def grid(y,x,try_count):
-    stdscr.addstr(y,x,grid_rows['grid_open'])
-    i=1
-    while i < try_count*2:
-        stdscr.addstr(y+i,x,grid_rows['grid_try'])
-        stdscr.addstr(y+1+i,x,grid_rows['grid_break'])
-        i+=2
-    stdscr.addstr(y+(try_count*2),x,grid_rows['grid_close'])
-
-guess = ""
-
 def a_guess(y,x,l):
     curses.noecho()
-    this_guess = guess
+    this_guess = ""
     submitted = False
     rows, cols = stdscr.getmaxyx()
     del_ch=cols-1
@@ -119,7 +121,7 @@ def print_letter_graph(y,x):
     stdscr.addstr(y_two,center_x_two,line_two)
     stdscr.addstr(y_three,center_x_three,line_three)
 
-keyboard_fb = {}
+KEYBOARD_FB = {}
 
 for i, l in enumerate(list(abcs)):
     keyboard_fb.update(
@@ -306,6 +308,11 @@ def guess_conveyor(y,x):
         y += 2
         # printc(str(success),"success: ",1)
 
+"""
+for printing stuff to work, it has to be operating at a guess frequency
+
+or maybe it should just update when it receives new info
+"""
 
 def main(stdscr):
     curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_GREEN)
