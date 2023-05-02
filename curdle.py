@@ -43,6 +43,9 @@ WORD = str(words[random.randint(0,len(words)-1)]).upper()
 def repeat(thing, n):
     return [thing for _ in range(n)]
 
+
+# move this into a grid function
+
 GRID_ROWS = {
     "grid_open" :  "┌" + '┬'.join(repeat("─",LETTER_COUNT)) + "┐",
     "grid_try" :   "│" + '│'.join(repeat(" ",LETTER_COUNT)) + "│",
@@ -59,7 +62,7 @@ GRID = '''\
     grid_repeat = "\n".join(repeat(GRID_ROWS["grid_break"] + "\n" + GRID_ROWS["grid_try"], TRY_COUNT))
 )
 
-
+# python logging to file/tail
 # debugging printing made easyish (replace this with a file/tail)
 def printc(string,label="",yoffset=0):
     rows, cols = stdscr.getmaxyx()
